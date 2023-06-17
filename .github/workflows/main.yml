@@ -9,8 +9,6 @@ on:
   # pull_request:
   #   branches: ["**"]
 
-concurrency: production
-
 env:
   # Use docker.io for Docker Hub if empty
   REGISTRY: docker.io
