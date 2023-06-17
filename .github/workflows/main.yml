@@ -114,12 +114,12 @@ jobs:
             ${{ runner.os }}-buildx
 
       # Logowanie do Dockerhub-a
-      - name: Build and push ghcr
+      - name: Build and push dockerhub
         uses: docker/build-push-action@v3
         id: build
         with:
           platforms: linux/amd64,linux/arm64/v8
-          context: "{{defaultsContext}}/${{matrix.context}}"
+          context: "{{defaultsContext}}:${{matrix.context}}"
           file: ${{matrix.dockerfile}}
           push: ${{ github.event_name != 'pull_request' }}
           tags: |
