@@ -24,15 +24,19 @@ jobs:
           - dockerfile: ./Dockerfile
             context: nginx
             image: voiteckheir/tch_lab15:nginx
+
           - dockerfile: ./Dockerfile
             context: mysql
             image: voiteckheir/tch_lab15:mysql
+
           - dockerfile: ./Dockerfile
             context: php
             image: voiteckheir/tch_lab15:php
+
           - dockerfile: ./Dockerfile
             context: phpmyadmin
             image: voiteckheir/tch_lab15:phpmyadmin
+
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -124,8 +128,10 @@ jobs:
           push: ${{ github.event_name != 'pull_request' }}
           tags: |
             ${{matrix.image}}
-          cache-from: type=local,src=/tmp/.buildx-cache
-          cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
+          cache-from: type=registry,ref=${{matrix.image}}
+          cache-to: type=registry,ref=${{matrix.image}},mode=max
+          # cache-from: type=local,src=/tmp/.buildx-cache
+          # cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
 
         #  tags: |
         #    ${{ secrets.DOCKERHUB_USERNAME }}/gha_lab10:zadv1
