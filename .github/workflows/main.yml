@@ -2,8 +2,8 @@ name: tch:lab15
 
 on:
   workflow_dispatch:
-  # push:
-  #   branches: ["*"]
+  push:
+    branches: ["*"]
   #   tags:
   #     - "v*"
 
@@ -23,22 +23,19 @@ jobs:
         include:
           - dockerfile: ./Dockerfile
             context: nginx
-            #image: voiteckheir/tch_lab15:nginx
+            image: voiteckheir/tch_lab15:nginx
 
           - dockerfile: ./Dockerfile
             context: mysql
-            #image: voiteckheir/tch_lab15:mysql
+            image: voiteckheir/tch_lab15:mysql
 
           - dockerfile: ./Dockerfile
             context: php
-            #image: voiteckheir/tch_lab15:php
+            image: voiteckheir/tch_lab15:php
 
           - dockerfile: ./Dockerfile
             context: phpmyadmin
-            #image: voiteckheir/tch_lab15:phpmyadmin
-        platform:
-          - linux/amd64
-          - linux/arm64/v8
+            image: voiteckheir/tch_lab15:phpmyadmin
 
     steps:
       - name: Checkout
@@ -82,8 +79,8 @@ jobs:
           push: true
           tags: |
             ${{matrix.image}}
-          # cache-from: type=registry,ref=${{matrix.image}}
-          # cache-to: type=registry,ref=${{matrix.image}},mode=max
+          cache-from: type=registry,ref=${{matrix.image}}
+          cache-to: type=registry,ref=${{matrix.image}},mode=max
           # cache-from: type=local,src=/tmp/.buildx-cache
           # cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
 
