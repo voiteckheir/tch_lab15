@@ -1,0 +1,89 @@
+version: '3.7'
+
+services:
+
+  # Konfiguracja usługi Nginx
+  nginx:
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    container_name: nginx
+    restart: unless-stopped
+    volumes:
+      - ./data/:/var/www/html  # Mapowanie katalogu lokalnego na katalog wewnątrz kontenera Nginx
+      - ./logs/nginx_log:/var/log/nginx/  # Mapowanie katalogu lokalnego na katalog z logami Nginx
+    depends_on:
+      - php-fpm  # Wymaga uruchomienia usługi php-fpm przed uruchomieniem Nginx
+    links:
+      - php-fpm  # Tworzenie połączenia sieciowego pomiędzy Nginx a php-fpm
+    ports:
+      - 6005:80  # Mapowanie portu 6666 na port 80 wewnątrz kontenera Nginx
+    networks:
+      - backend  # Przypisanie usługi do sieci backend
+      - frontend  # Przypisanie usługi do sieci frontend
+
+  # Konfiguracja usługi MySQL
+  mysql:
+    build:
+      context: ./mysql
+      dockerfile: Dockerfile
+    container_name: mysql
+    restart: unless-stopped
+    command: --default-authentication-plugin=mysql_native_password
+    environment:
+      MYSQL_ROOT_PASSWORD: example  # Ustawienie hasła dla konta root w MySQL
+      MYSQL_DATABASE: mydatabase  # Utworzenie bazy danych o nazwie "mydatabase"
+    ports:
+      - 3306:3306  # Mapowanie portu 3306 na port 3306 wewnątrz kontenera MySQL
+    volumes:
+      - mysql:/var/lib/mysql  # Mapowanie woluminu na katalog danych MySQL
+      - ./logs/mysql_log:/var/log/mysql  # Mapowanie katalogu lokalnego na katalog z logami MySQL
+    networks:
+     - backend  # Przypisanie usługi do sieci backend
+
+  # Konfiguracja usługi PhpMyAdmin
+  phpmyadmin:
+    build:
+      context: ./phpmyadmin
+      dockerfile: Dockerfile
+    container_name: phpmyadmin
+    restart: unless-stopped
+    hostname: localhost
+    volumes:
+      - ./logs/phpmyadmin_log:/var/log/httpd/error_log  # Mapowanie katalogu lokalnego na katalog z logami PhpMyAdmin
+    ports:
+      - 6001:80  # Mapowanie portu 6001 na port 80 wewnątrz kontenera PhpMyAdmin
+    environment:
+      - PMA_ARBITRARY=1
+      - PMA_HOST=mysql  # Ustawienie hosta bazy danych MySQL dla PhpMyAdmin
+      #- MYSQL_ROOT_PASSWORD=root  # Ustawienie hasła dla konta root w MySQL dla PhpMyAdmin
+      #- MYSQL_USER=user  # Utworzenie nowego użytkownika MySQL dla PhpMyAdmin
+      #- MYSQL_PASSWORD=password  # Ustawienie hasła dla użytkownika MySQL dla PhpMyAdmin
+    depends_on:
+      - mysql  # Wymaga uruchomienia usługi MySQL przed uruchomieniem PhpMyAdmin
+    links:
+      - 'mysql:mydatabase'  # Tworzenie połączenia sieciowego pomiędzy PhpMyAdmin a MySQL
+    networks:
+      - backend  # Przypisanie usługi do sieci backend
+
+  # Konfiguracja usługi php-fpm
+  php-fpm:
+    build:
+      context: ./php
+      dockerfile: Dockerfile
+    container_name: php-fpm
+    expose:
+      - 9000  # Odsłonięcie portu 9000 dla połączeń z zewnątrz kontenera
+    restart: unless-stopped
+    volumes:
+      - ./logs/php_log:/var/log/httpd/error_log  # Mapowanie katalogu lokalnego na katalog z logami PHP
+      - ./data/:/var/www/html/  # Mapowanie katalogu lokalnego na katalog wewnątrz kontenera php-fpm
+    networks:
+      - backend  # Przypisanie usługi do sieci backend
+
+networks:
+  backend:  # Definicja sieci backend
+  frontend:  # Definicja sieci frontend
+
+volumes:
+  mysql:  # Utworzenie woluminu o nazwie "mysql"
