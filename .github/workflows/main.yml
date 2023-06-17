@@ -74,7 +74,7 @@ jobs:
         id: build
         with:
           platforms: linux/amd64,linux/arm64/v8,
-          context: "{{ defaultsContext }}:${{ matrix.context }}"
+          context: "{{ defaultsContext }}${{ matrix.context }}"
           file: ${{matrix.dockerfile}}
           push: true
           tags: |
