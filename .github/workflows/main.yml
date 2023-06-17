@@ -6,14 +6,11 @@ on:
   #   branches: ["*"]
   #   tags:
   #     - "v*"
-  # pull_request:
-  #   branches: ["**"]
 
 env:
   # Use docker.io for Docker Hub if empty
   REGISTRY: docker.io
 
-  # IMAGE_NAME: voiteckheir/tch_lab15
   # SHA: ${{ github.event.pull_request.head.sha || github.event.after }}
 #
 jobs:
