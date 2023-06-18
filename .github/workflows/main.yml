@@ -23,19 +23,19 @@ jobs:
         include:
           - dockerfile: ./Dockerfile
             context: nginx
-            image: voiteckheir/tch_lab15:nginx
+            image: voiteckheir/tch_lab15:tch_lab15-nginx
 
           - dockerfile: ./Dockerfile
             context: mysql
-            image: voiteckheir/tch_lab15:mysql
+            image: voiteckheir/tch_lab15:tch_lab15-mysql
 
           - dockerfile: ./Dockerfile
             context: php
-            image: voiteckheir/tch_lab15:php
+            image: voiteckheir/tch_lab15:tch_lab15-php
 
           - dockerfile: ./Dockerfile
             context: phpmyadmin
-            image: voiteckheir/tch_lab15:phpmyadmin
+            image: voiteckheir/tch_lab15:tch_lab15-phpmyadmin
 
     steps:
       - name: Checkout
@@ -73,8 +73,8 @@ jobs:
         uses: docker/build-push-action@v3
         id: build
         with:
-          platforms: linux/amd64,linux/arm64/v8,
-          context: "{{ defaultsContext }}:${{ matrix.context }}"
+          platforms: linux/amd64,linux/arm64,
+          context: "{{defaultContext}}:${{ matrix.context }}"
           file: ${{matrix.dockerfile}}
           push: true
           tags: |
