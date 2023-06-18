@@ -1,9 +1,77 @@
 version: '3'
+
 services:
-  web:
-    stdin_open: true
-    environment:
-      - CHOKIDAR_USEPOLLING=true
-    image: ghcr.io/voiteckheir/zadanie2:arm64
+
+  # Konfiguracja usługi Nginx
+  nginx:
+    image:
+    # image: voiteckheir/tch_lab15:tch_lab15-nginx
+    container_name: nginx
+    restart: unless-stopped
+    volumes:
+      - ./data/:/var/www/html  # Mapowanie katalogu lokalnego na katalog wewnątrz kontenera Nginx
+    depends_on:
+      - php-fpm  # Wymaga uruchomienia usługi php-fpm przed uruchomieniem Nginx
+    links:
+      - php-fpm  # Tworzenie połączenia sieciowego pomiędzy Nginx a php-fpm
     ports:
-      - "80:80"
+      - 6005:80  # Mapowanie portu 6666 na port 80 wewnątrz kontenera Nginx
+    networks:
+      - backend  # Przypisanie usługi do sieci backend
+      - frontend  # Przypisanie usługi do sieci frontend
+
+  # Konfiguracja usługi MySQL
+  mysql:
+    image:
+    # image: voiteckheir/tch_lab15:tch_lab15-mysql
+    container_name: mysql
+    restart: unless-stopped
+    command: --default-authentication-plugin=mysql_native_password
+    environment:
+      MYSQL_ROOT_PASSWORD: root  # Ustawienie hasła dla konta root w MySQL
+      MYSQL_DATABASE: database  # Utworzenie bazy danych o nazwie "mydatabase"
+    ports:
+      - 3306:3306  # Mapowanie portu 3306 na port 3306 wewnątrz kontenera MySQL
+    volumes:
+      - mysql:/var/lib/mysql  # Mapowanie woluminu na katalog danych MySQL
+    networks:
+     - backend  # Przypisanie usługi do sieci backend
+
+  # Konfiguracja usługi PhpMyAdmin
+  phpmyadmin:
+    image:
+    # image: voiteckheir/tch_lab15:tch_lab15-phpmyadmin
+    container_name: phpmyadmin
+    restart: unless-stopped
+    ports:
+      - 6001:80  # Mapowanie portu 6001 na port 80 wewnątrz kontenera PhpMyAdmin
+    environment:
+      - PMA_ARBITRARY=1
+      - PMA_HOST=mysql  # Ustawienie hosta bazy danych MySQL dla PhpMyAdmin
+    depends_on:
+      - mysql  # Wymaga uruchomienia usługi MySQL przed uruchomieniem PhpMyAdmin
+    links:
+      - 'mysql:database'  # Tworzenie połączenia sieciowego pomiędzy PhpMyAdmin a MySQL
+    networks:
+      - backend  # Przypisanie usługi do sieci backend
+
+  # Konfiguracja usługi php-fpm
+  php-fpm:
+    image:
+    # image: voiteckheir/tch_lab15:tch_lab15-php
+    container_name: php-fpm
+    expose:
+      - 9000  # Odsłonięcie portu 9000 dla połączeń z zewnątrz kontenera
+    restart: unless-stopped
+    volumes:
+      - ./data/:/var/www/html/  # Mapowanie katalogu lokalnego na katalog wewnątrz kontenera php-fpm
+    networks:
+      - backend  # Przypisanie usługi do sieci backend
+
+networks:
+  backend:  # Definicja sieci backend
+  frontend:  # Definicja sieci frontend
+
+volumes:
+  mysql:  # Utworzenie woluminu o nazwie "mysql"
+

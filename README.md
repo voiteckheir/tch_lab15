@@ -1,9 +1,30 @@
-# lab11v3
+# lab15
+
+polecam założyć na githubie i na dockerhubie repozytoria, oba nazwane tak samo np jak u mnie tch_lab15<br/>
+należy pozmieniać nazwy w plikach docker-compose.yml i .github/workflows/main.yml na swoje<br/>
+
+w lab 10 jest instrukcja jak i gdzie dodać sekrety, trzeba dodać 2 sekrety:<br/>
+DOCKERHUB_USERNAME - nazwa użytkownika na dockerhub<br/>
+DOCKERHUB_TOKEN - token do dockerhub<br/>
+
+workflow_dispatch:      -to pozwala na ręczne uruchomienie workflow z poziomu githuba<br/>
+push:
+    branches: ["*"]     - uruchamia workflow przy każdym pushu do repozytorium<br/>
+
+
 <hr/>
 komenda do uruchomienia:<br/>
 ` 
 docker compose up -d --build 
 `
+
+do uruchomienia z pobraniem obrazów z dockerhuba należy najspierw zalogować sie na dockerhuba na komputerze:<br/>
+potem użyć komendy:<br/>
+docker compose -f docker-compose2.yml up -d<br/>
+lecz nie do końca to działa, wywala: 500 Internal Server Error
+
+<hr/>
+
 <hr/>
 komenda do zatrzymania i usunięcia kontenerów:<br/>
 ` 
@@ -13,7 +34,7 @@ docker compose down
 Uruchomienie usług w przeglądarce:
 Serwer nginx ze stroną:<br/>
 ` 
-http://localhost:6666/  
+http://localhost:6005/  
 `
 <br/>
 phpmyadmin: <br/>
@@ -21,41 +42,5 @@ phpmyadmin: <br/>
 http://localhost:6001/ 
 `
 <hr/>
-Port 6666 jest domyślnie zastrzeżony
-Odblokowanie portu 6666:
-https://thegeekpage.com/err-unsafe-port/
 
-wyświetlana strona:<br/>
-![image](https://github.com/VoiteckHeira/lab11v3/assets/91530837/561b9ca7-d8a8-4b5d-ba6d-25802b5e57f9)
 
-<hr/>
-dodany jest również wolumen z logami z kontenerów, głównie do testów
-oraz wolumen data, w którym znajduje się plik index.php
-
-Reprezentacja graficzna <br/>
-https://blog.baslijten.com/how-to-visualize-your-docker-composition/ <br/>
-komendę odpalamy znajdując się w folderze z docker-compose.yml
-komenda:<br/>
-`
-docker run --rm -it --name dcv -v ${PWD}:/input pmsipilot/docker-compose-viz render -m image docker-compose.yml --output-file=tch_lab11_wizualizacja.png --force 
-`
-<br/>
-wynik:<br/>
- ![tch_lab11_wizualizacja](https://github.com/VoiteckHeira/lab11v3/assets/91530837/efb7de20-fe80-4463-ba11-bd930e778cc9)
-<hr/>
-
-drzewo plików: <br/>
-├── data <br/>
-│   └── index.php<br/>
-├── logs<br/>
-├── mysql<br/>
-│   └── Dockerfile<br/>
-├── nginx<br/>
-│   ├── default.conf<br/>
-│   └── Dockerfile<br/>
-├── php<br/>
-│   └── Dockerfile<br/>
-├── phpmyadmin<br/>
-│   └── Dockerfile<br/>
-│<br/>
-└── docker-compose.yml<br/>
